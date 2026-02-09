@@ -1,0 +1,26 @@
+<Solution>
+  <Folder Name="/Docs/">
+    <File Path="Docs/ARCHITECTURE_LAYER_RESPONSIBILITIES.md" />
+    <File Path="Docs/CQRS_PATTERN.md" />
+    <File Path="docs/DAPPER_HANDLER_EXAMPLE.md" />
+    <File Path="docs/DAPPER_TRANSACTION_PATTERN.md" />
+    <File Path="docs/INTERFACE_PLACEMENT_GUIDE.md" />
+    <File Path="Docs/README.md" />
+    <File Path="docs/REPOSITORY_DESIGN_PATTERN.md" />
+    <File Path="Docs/REPOSITORY_VS_QUERYSERVICE.md" />
+    <File Path="docs/UNIT_OF_WORK_PATTERN.md" />
+  </Folder>
+  <Folder Name="/Scripts/" />
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="Directory.Packages.props" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/DMIS_Backend.Api/DMIS_Backend.Api.csproj" />
+    <Project Path="src/DMIS_Backend.Application/DMIS_Backend.Application.csproj" />
+    <Project Path="src/DMIS_Backend.Domain/DMIS_Backend.Domain.csproj" />
+    <Project Path="src/DMIS_Backend.Infrastructure/DMIS_Backend.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/" />
+</Solution>

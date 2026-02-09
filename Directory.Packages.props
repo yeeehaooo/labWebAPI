@@ -1,0 +1,104 @@
+﻿<Project>
+  <PropertyGroup>
+    <!-- 啟用中央套件管理 -->
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <!--
+      強制禁止在 .csproj 中指定 PackageReference Version
+      如果違反此規則，建置時會產生錯誤
+    -->
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- ============================================
+         API / Web 相關套件
+         ============================================ -->
+    <!-- Swagger/OpenAPI 文件 -->
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.2" />
+    <PackageVersion Include="Scalar.AspNetCore" Version="2.12.25" />
+    <PackageVersion Include="Swashbuckle.AspNetCore" Version="10.1.2" />
+    <!-- ============================================
+         Entity Framework Core
+         ============================================ -->
+    <!-- Microsoft.EntityFrameworkCore.SqlServer -->
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.2" />
+    <!-- Microsoft.EntityFrameworkCore.Tools -->
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.2" />
+    <!-- Microsoft.EntityFrameworkCore.Design -->
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.2" />
+    <!-- ============================================
+         Dapper (如果使用)
+         ============================================ -->
+    <!-- Dapper -->
+    <PackageVersion Include="Dapper" Version="2.1.66" />
+    <!-- Dapper.Contrib -->
+    <!-- <PackageVersion Include="Dapper.Contrib" Version="2.1.35" /> -->
+    <!-- ============================================
+         資料庫連線
+         ============================================ -->
+    <!-- Microsoft.Data.SqlClient -->
+    <PackageVersion Include="Microsoft.Data.SqlClient" Version="6.1.4" />
+    <!-- System.Data.SqlClient (已過時，建議使用 Microsoft.Data.SqlClient) -->
+    <!-- <PackageVersion Include="System.Data.SqlClient" Version="4.8.6" /> -->
+    <!-- ============================================
+         快取
+         ============================================ -->
+    <!-- Microsoft.Extensions.Caching.StackExchangeRedis -->
+    <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.2" />
+    <!-- StackExchange.Redis -->
+    <!-- <PackageVersion Include="StackExchange.Redis" Version="2.7.20" /> -->
+    <!-- ============================================
+         驗證
+         ============================================ -->
+    <!-- FluentValidation -->
+    <!-- <PackageVersion Include="FluentValidation" Version="11.9.0" /> -->
+    <!-- FluentValidation.AspNetCore -->
+    <!-- <PackageVersion Include="FluentValidation.AspNetCore" Version="11.3.0" /> -->
+    <!-- ============================================
+         日誌
+         ============================================ -->
+    <!-- Serilog.AspNetCore -->
+    <!-- <PackageVersion Include="Serilog.AspNetCore" Version="8.0.0" /> -->
+    <!-- Serilog.Sinks.Console -->
+    <!-- <PackageVersion Include="Serilog.Sinks.Console" Version="5.0.1" /> -->
+    <!-- Serilog.Sinks.File -->
+    <!-- <PackageVersion Include="Serilog.Sinks.File" Version="5.0.0" /> -->
+    <!-- ============================================
+         測試
+         ============================================ -->
+    <!-- xunit -->
+    <!-- <PackageVersion Include="xunit" Version="2.6.2" /> -->
+    <!-- xunit.runner.visualstudio -->
+    <!-- <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.5" /> -->
+    <!-- Moq -->
+    <!-- <PackageVersion Include="Moq" Version="4.20.69" /> -->
+    <!-- FluentAssertions -->
+    <!-- <PackageVersion Include="FluentAssertions" Version="6.12.0" /> -->
+    <!-- ============================================
+         其他工具
+         ============================================ -->
+    <!-- AutoMapper -->
+    <!-- <PackageVersion Include="AutoMapper" Version="13.0.1" />-->
+    <!-- AutoMapper.Extensions.Microsoft.DependencyInjection -->
+    <!-- <PackageVersion
+      Include="AutoMapper.Extensions.Microsoft.DependencyInjection"
+      Version="13.0.1"
+    /> -->
+    <!-- ============================================
+         Microsoft.Extensions 基礎套件
+         ============================================ -->
+    <!-- Microsoft.Extensions.Configuration.Abstractions -->
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.2" />
+    <!-- Microsoft.Extensions.DependencyInjection.Abstractions -->
+    <PackageVersion
+      Include="Microsoft.Extensions.DependencyInjection.Abstractions"
+      Version="10.0.2"
+    />
+    <!-- Microsoft.Extensions.Hosting.Abstractions -->
+    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.2" />
+    <!-- Microsoft.Extensions.Http -->
+    <PackageVersion Include="Microsoft.Extensions.Http" Version="10.0.2" />
+    <!-- Microsoft.Extensions.Logging.Abstraction -->
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.2" />
+    <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.1.2" />
+  </ItemGroup>
+</Project>

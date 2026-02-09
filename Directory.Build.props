@@ -1,0 +1,14 @@
+<Project>
+  <PropertyGroup>
+    <!--
+      檢測並警告：如果在 .csproj 中指定了 PackageReference Version
+      這會覆蓋 Directory.Packages.props 中的版本設定，導致版本不一致
+    -->
+    <WarnOnPackingNonPackableProject>false</WarnOnPackingNonPackableProject>
+  </PropertyGroup>
+  <!--
+    注意：在中央套件管理模式下，PackageReference 不應該有 Version 屬性
+    如果違反此規則，NuGet 會產生錯誤 NU1008，建置會失敗
+    因此不需要額外的檢查 Target
+  -->
+</Project>

@@ -1,0 +1,132 @@
+﻿using DMIS_Backend.Api.Filters;
+using DMIS_Backend.Api.Middlewares;
+using DMIS_Backend.Application;
+using DMIS_Backend.Infrastructure.DependencyInjection;
+using Scalar.AspNetCore;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+
+builder.Services.AddControllers();
+
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddMvc(
+  options =>
+  {
+    options.Filters.Add<ResultWrappingFilter>();
+    options.Filters.Add<WorkflowContextActionFilter>();
+  });
+
+builder.Services.AddOpenApi(options =>
+{
+
+  options.AddDocumentTransformer(
+    (document, context, cancellationToken) =>
+    {
+      document.Info = new()
+      {
+        Title = "DMIS Backend API",
+        Version = "v1",
+        Description = "DMIS Backend API Documentation",
+      };
+      return Task.CompletedTask;
+    }
+  );
+  // 註冊 Example Transformer，讓標了 RequestExampleAttribute 和 ResponseExampleAttribute 的 endpoint 自動在 OpenAPI 顯示範例.
+  //options.AddOperationTransformer(ExampleOperationTransformer.TransformAsync);
+
+  // 註冊 JWT Security Scheme，讓 OpenAPI 顯示 JWT 認證.
+  //options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
+});
+
+#region AddOperationTransformer vs AddDocumentTransformer 說明
+// 參考文件: hhttps://learn.microsoft.com/zh-tw/aspnet/core/fundamentals/openapi/customize-openapi?view=aspnetcore-10.0
+/*
+    [5 tools called]
+    ## `AddOperationTransformer` vs `AddDocumentTransformer`
+
+    ### 1. 作用範圍不同
+
+    | | AddOperationTransformer | AddDocumentTransformer |
+    |---|---|---|
+    | **對象** | 單一 operation（路徑 + HTTP 方法） | 整份 OpenAPI 文件 |
+    | **呼叫次數** | 每個 endpoint 各執行一次 | 每個文件只執行一次 |
+
+    ### 2. 用途不同
+
+    **AddOperationTransformer**
+    - 修改「個別 endpoint」的參數、回應等
+    - 每個 endpoint 都會觸發一次
+    - 適合：為每個操作加上 500 回應、修改某個 endpoint 的 description 等
+
+    **AddDocumentTransformer**
+    - 修改「整份文件」的頂層結構
+    - 適合：加 `document.Info`、`document.Components.SecuritySchemes`、調整頂層設定等
+
+    ### 3. 執行順序
+
+    轉換器順序是：
+    1. Schema transformers（依註冊順序）
+    2. Operation transformers（依註冊順序）
+    3. Document transformers（最後執行）
+
+    所有 operation 和 schema 都處理完後，才會跑 document transformer，因此 document transformer 可以看到完整文件。
+
+    ### 4. 對應到你專案的用法
+
+    - **ExampleOperationTransformer**：用 `AddOperationTransformer`
+    → 要針對「每個 endpoint」補 example，所以用 operation 層級。
+    - **BearerSecuritySchemeTransformer**：用 `AddDocumentTransformer`
+    → 要在 `document.Components.SecuritySchemes` 加 JWT，是文件頂層結構，用 document 層級。
+
+    簡化來說：改單一 endpoint 用 Operation，改整份文件用 Document。
+
+*/
+#endregion
+// 註冊 Application 層服務（UseCase Handlers）
+builder.Services.AddApplication();
+
+// 註冊 Infrastructure 層服務（DB / Encryption / Cache）
+builder.Services.AddInfrastructure(builder.Configuration);
+
+// 註冊 Exception Handler（必須在 UseExceptionHandler 之前註冊）
+builder.Services.AddExceptionHandler<InternalServerExceptionHandler>();
+builder.Services.AddProblemDetails();
+
+var app = builder.Build();
+
+/// 最外層：全域錯誤捕捉
+app.UseExceptionHandler();
+/// 錯誤來源追蹤（自訂）
+app.UseMiddleware<WorkflowMiddleware>();
+/// 錯誤來源追蹤（自訂）
+app.UseMiddleware<ErrorSourceMiddleware>();
+
+/// HTTPS 強制
+app.UseHttpsRedirection();
+
+/// Swagger（開發環境）
+if (app.Environment.IsDevelopment())
+{
+  app.MapOpenApi();
+  // 添加 Scalar UI 配置
+  app.MapScalarApiReference(options =>
+  {
+    options
+      .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
+  });
+}
+
+/// Authentication（先驗人）
+app.UseAuthentication();
+
+/// Authorization（驗證後才能做 policy 判斷）
+app.UseAuthorization();
+
+/// Endpoints
+app.MapControllers();
+
+app.Run();
