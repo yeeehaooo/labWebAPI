@@ -20,45 +20,55 @@ public static class ResultToApiResponseMapper
     if (result.IsSuccess)
     {
       return new APIResponse<T>(
-          Code: result.Code ?? "0000",
-          Message: result.Message ?? "操作成功",
-          Data: result.Data
+        Code: result.Code ?? "0000",
+        Message: result.Message ?? "操作成功",
+        Data: result.Data
       );
     }
 
     return new APIResponse<T>(
-        Code: result.Code ?? "9999",
-        Message: result.Message ?? "系統錯誤",
-        ExceptionDetails: result.Error?.ToExceptionDetails()
+      Code: result.Code ?? "9999",
+      Message: result.Message ?? "系統錯誤",
+      ExceptionDetails: result.Error?.ToExceptionDetails()
     );
   }
 }
+
+/// <summary>
+/// 錯誤映射擴充方法
+/// 將 ErrorDetail 轉換為 ExceptionDetails
+/// </summary>
 public static class ErrorMappingExtensions
 {
+  /// <summary>
+  /// 將 ErrorDetail 轉換為 ExceptionDetails（包含技術細節）
+  /// </summary>
+  /// <param name="error">錯誤詳細資訊</param>
+  /// <returns>例外錯誤詳細資訊</returns>
   public static ExceptionDetails ToExceptionDetails(this ErrorDetail error)
   {
     return new ExceptionDetails(
-        Type: error.ErrorCode.Source.ToString(),
-        Title: error.ErrorCode.Description,   // 原始錯誤訊息描述
-        Detail: error.GuardTrace ?? error.StackTrace ?? "",
-        ValidationErrors: error.ValidationErrors?
-            .GroupBy(v => v.Field)
-            .ToDictionary(g => g.Key, g => g.Select(x => x.Message).ToArray())
+      Type: error.ErrorCode.Source.ToString(),
+      Title: error.ErrorCode.Description, // 原始錯誤訊息描述
+      Detail: error.GuardTrace ?? error.StackTrace ?? "",
+      ValidationErrors: error
+        .ValidationErrors?.GroupBy(v => v.Field)
+        .ToDictionary(g => g.Key, g => g.Select(x => x.Message).ToArray())
     );
   }
+
   /// <summary>
   /// Prod 用：移除技術細節
   /// </summary>
-  public static ExceptionDetails ToExceptionDetailsWithoutTechnicalDetails(
-    this ErrorDetail error)
+  public static ExceptionDetails ToExceptionDetailsWithoutTechnicalDetails(this ErrorDetail error)
   {
     return new ExceptionDetails(
       Type: error.ErrorCode.Source.ToString(),
       Title: error.ErrorCode.Description,
       Detail: error.GuardTrace,
-      ValidationErrors: error.ValidationErrors?
-            .GroupBy(v => v.Field)
-            .ToDictionary(g => g.Key, g => g.Select(x => x.Message).ToArray())
+      ValidationErrors: error
+        .ValidationErrors?.GroupBy(v => v.Field)
+        .ToDictionary(g => g.Key, g => g.Select(x => x.Message).ToArray())
     );
   }
 }
