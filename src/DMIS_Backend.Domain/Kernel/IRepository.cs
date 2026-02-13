@@ -46,9 +46,4 @@ public interface IRepository<TAggregate>
   /// 刪除 Aggregate
   /// </summary>
   Task<int> DeleteAsync(int id, CancellationToken cancellationToken = default);
-
-  /// <summary>
-  /// 儲存變更（提交交易）
-  /// </summary>
-  Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

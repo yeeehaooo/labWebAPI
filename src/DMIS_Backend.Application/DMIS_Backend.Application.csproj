@@ -1,15 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <Compile Remove="Core\ErrorContext\**" />
+    <Compile Remove="Core\Executions\**" />
+    <EmbeddedResource Remove="Core\ErrorContext\**" />
+    <EmbeddedResource Remove="Core\Executions\**" />
+    <None Remove="Core\ErrorContext\**" />
+    <None Remove="Core\Executions\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\DMIS_Backend.Domain\DMIS_Backend.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Kernel\Contexts\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
   </ItemGroup>
 
   <PropertyGroup>

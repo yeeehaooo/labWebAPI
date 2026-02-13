@@ -1,4 +1,6 @@
-﻿namespace DMIS_Backend.Api.Common.OpenAPI;
+﻿using Scalar.AspNetCore;
+
+namespace DMIS_Backend.Api.Common.OpenAPI;
 
 /// <summary>
 /// OpenAPI 配置擴充方法
@@ -34,6 +36,20 @@ public static class OpenAPIConfig
           // 註冊 JWT Security Scheme，讓 OpenAPI 顯示 JWT 認證.
           options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
         });
+  }
+  public static WebApplication UseOpenAPI(this WebApplication app)
+  {
+    /// Swagger（開發環境）
+    if (app.Environment.IsDevelopment())
+    {
+      app.MapOpenApi();
+      // 添加 Scalar UI 配置
+      app.MapScalarApiReference(options =>
+      {
+        options.WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
+      });
+    }
+    return app;
   }
 
   #region AddOperationTransformer vs AddDocumentTransformer 說明

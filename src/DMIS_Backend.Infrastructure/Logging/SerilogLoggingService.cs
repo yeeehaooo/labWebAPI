@@ -1,4 +1,4 @@
-using DMIS_Backend.Application.Kernel.Abstractions;
+﻿using DMIS_Backend.Application.Core.Abstractions.Logging;
 using Microsoft.Extensions.Logging;
 
 namespace DMIS_Backend.Infrastructure.Logging;

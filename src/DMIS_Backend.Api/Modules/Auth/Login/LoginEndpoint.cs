@@ -1,8 +1,7 @@
-﻿using DMIS_Backend.Api.Common;
-using DMIS_Backend.Application.Kernel.Abstractions;
-using DMIS_Backend.Application.Kernel.Workflows.IdentifierCodes;
+﻿using DMIS_Backend.Api.Common.Responses;
+using DMIS_Backend.Application.Core.Abstractions.Commands;
+using DMIS_Backend.Application.Core.Workflows;
 using DMIS_Backend.Application.Modules.Auth.Commands.Login;
-using DMIS_Backend.Domain.Kernel.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,7 +14,6 @@ namespace DMIS_Backend.Api.Modules.Auth.Login;
 [ApiController]
 [Tags("Auth")]
 [Route("api/auth")]
-[ModuleCode(nameof(ModuleCode.Auth))]
 public class LoginEndpoint : ControllerBase
 {
   /// <summary>
@@ -27,8 +25,6 @@ public class LoginEndpoint : ControllerBase
   /// <returns>JWT Token 和相關資訊</returns>
   [HttpPost("login")]
   [AllowAnonymous]
-  [OperationType(nameof(OperationType.Command))]
-  [ScopeFunction(nameof(ScopeFunction.LOGIN))]
   [ProducesResponseType(typeof(APIResponse<LoginResponse>), StatusCodes.Status200OK)]
   [ProducesResponseType(typeof(APIResponse<object>), StatusCodes.Status401Unauthorized)]
   public async Task<IActionResult> Handle(
@@ -36,13 +32,15 @@ public class LoginEndpoint : ControllerBase
     [FromServices] IUseCaseCommandHandler<LoginCommand, LoginResult> handler,
     CancellationToken cancellationToken)
   {
+    Workflow.Set(WorkflowCode.Login);
     // 將 API Request 轉換為 Application Command
     var command = request.ToCommand();
 
     // 呼叫 UseCase Handler
     var result = await handler.HandleAsync(command, cancellationToken);
 
-    // 將 Application Result 轉換為 API Response
-    return Ok(result.Map(data => data.ToLoginResponse(request)));
+    var response = result.Map(data => data.ToLoginResponse(request)).ToApiResponse();
+
+    return Ok(response);
   }
 }

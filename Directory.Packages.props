@@ -13,18 +13,19 @@
          API / Web 相關套件
          ============================================ -->
     <!-- Swagger/OpenAPI 文件 -->
-    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.2" />
-    <PackageVersion Include="Scalar.AspNetCore" Version="2.12.25" />
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.3" />
+    <PackageVersion Include="Scalar.AspNetCore" Version="2.12.38" />
+    <PackageVersion Include="Scrutor" Version="7.0.0" />
     <PackageVersion Include="Swashbuckle.AspNetCore" Version="10.1.2" />
     <!-- ============================================
          Entity Framework Core
          ============================================ -->
     <!-- Microsoft.EntityFrameworkCore.SqlServer -->
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.2" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.3" />
     <!-- Microsoft.EntityFrameworkCore.Tools -->
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.2" />
     <!-- Microsoft.EntityFrameworkCore.Design -->
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.2" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.3" />
     <!-- ============================================
          Dapper (如果使用)
          ============================================ -->
@@ -43,7 +44,7 @@
          快取
          ============================================ -->
     <!-- Microsoft.Extensions.Caching.StackExchangeRedis -->
-    <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.2" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.3" />
     <!-- StackExchange.Redis -->
     <!-- <PackageVersion Include="StackExchange.Redis" Version="2.7.20" /> -->
     <!-- ============================================
@@ -54,7 +55,7 @@
     <!-- FluentValidation.AspNetCore -->
     <!-- <PackageVersion Include="FluentValidation.AspNetCore" Version="11.3.0" /> -->
     <!-- JWT Authentication -->
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.2" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.3" />
     <!-- ============================================
          日誌
          ============================================ -->
@@ -89,18 +90,15 @@
          Microsoft.Extensions 基礎套件
          ============================================ -->
     <!-- Microsoft.Extensions.Configuration.Abstractions -->
-    <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.2" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.3" />
     <!-- Microsoft.Extensions.DependencyInjection.Abstractions -->
-    <PackageVersion
-      Include="Microsoft.Extensions.DependencyInjection.Abstractions"
-      Version="10.0.2"
-    />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.3" />
     <!-- Microsoft.Extensions.Hosting.Abstractions -->
-    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.2" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.3" />
     <!-- Microsoft.Extensions.Http -->
-    <PackageVersion Include="Microsoft.Extensions.Http" Version="10.0.2" />
+    <PackageVersion Include="Microsoft.Extensions.Http" Version="10.0.3" />
     <!-- Microsoft.Extensions.Logging.Abstraction -->
-    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.2" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.3" />
     <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.1.2" />
   </ItemGroup>
 </Project>

@@ -1,8 +1,9 @@
-﻿using DMIS_Backend.Application.Kernel.Abstractions;
-using DMIS_Backend.Application.Kernel.Guards;
-using DMIS_Backend.Application.Kernel.Results;
-using DMIS_Backend.Application.Kernel.Security;
-using DMIS_Backend.Domain.Kernel.ErrorCodes;
+﻿using System.Security.Claims;
+using DMIS_Backend.Application.Core.Abstractions.Commands;
+using DMIS_Backend.Application.Core.Abstractions.Security;
+using DMIS_Backend.Application.Core.Results;
+using DMIS_Backend.Domain.Kernel.Guards;
+using DMIS_Backend.Domain.Kernel.Primitives;
 
 namespace DMIS_Backend.Application.Modules.Auth.Commands.RefreshToken;
 
@@ -34,7 +35,7 @@ public class RefreshTokenHandler : IUseCaseCommandHandler<RefreshTokenCommand, R
     try
     {
       // 驗證輸入
-      AppGuard.Against.Throw(string.IsNullOrWhiteSpace(command.Token), ErrorCode.TokenCannotBeEmpty, "token empty.");
+      Guard.Application.Must(string.IsNullOrWhiteSpace(command.Token), ApplicationCode.ValidationFailed, "token empty.");
 
       // 驗證舊 Token（目前只驗證 JWT Token，後續可擴展為驗證 RefreshToken）
       var principal = _authService.ValidateToken(command.Token);
@@ -44,11 +45,11 @@ public class RefreshTokenHandler : IUseCaseCommandHandler<RefreshTokenCommand, R
         var refreshTokenInfo = await _authService.ValidateRefreshTokenAsync(command.Token, ct);
         // 從 RefreshToken 取得使用者資訊（未來擴展）
         // 目前階段：如果 RefreshToken 有效，但無法取得 Claims，返回錯誤
-        AppGuard.Against.Throw(refreshTokenInfo == null || refreshTokenInfo.IsRevoked, ErrorCode.TokenAuthError, "Token 無效或已過期.");
+        Guard.Application.Must(refreshTokenInfo == null || refreshTokenInfo.IsRevoked, ApplicationCode.InvalidState, "Token 無效或已過期.");
       }
 
       // 從舊 Token 中取得 Claims
-      var claims = principal.Claims.ToList();
+      var claims = principal?.Claims.ToList() ?? new List<Claim>();
 
       // 產生新 Token
       var expirationMinutes = command.ExpirationMinutes ?? 60;
@@ -63,9 +64,10 @@ public class RefreshTokenHandler : IUseCaseCommandHandler<RefreshTokenCommand, R
 
       return Result<RefreshTokenResult>.Success(result);
     }
-    catch (Exception ex)
+    catch //(Exception ex)
     {
-      return Result<RefreshTokenResult>.Failure(ErrorCode.ApplicationLayerError, ex);
+      throw;
+      //return Result<RefreshTokenResult>.Failure(ErrorCode.ApplicationLayerError, ex);
     }
   }
 }

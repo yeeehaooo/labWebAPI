@@ -1,9 +1,8 @@
-using System.Diagnostics;
-using DMIS_Backend.Api.Common;
-using DMIS_Backend.Application.Kernel.ErrorCodes;
-using DMIS_Backend.Application.Kernel.Workflows;
+﻿using System.Diagnostics;
+using DMIS_Backend.Api.Common.Responses;
+using DMIS_Backend.Application.Core.Workflows;
+using DMIS_Backend.Domain.Kernel.Primitives;
 using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace DMIS_Backend.Api.Pipeline.ErrorHandling;
 
@@ -33,87 +32,37 @@ public sealed class InternalServerExceptionHandler : IExceptionHandler
   /// <param name="cancellationToken">取消令牌</param>
   /// <returns>如果已處理例外則返回 true，否則返回 false</returns>
   public async ValueTask<bool> TryHandleAsync(
-    HttpContext httpContext,
-    Exception exception,
-    CancellationToken cancellationToken
-  )
+       HttpContext httpContext,
+       Exception exception,
+       CancellationToken cancellationToken)
   {
     var requestSource =
-      ErrorSourceContext.Get() ?? $"{httpContext.Request.Method} {httpContext.Request.Path}";
+        $"{httpContext.Request.Method} {httpContext.Request.Path}";
 
-    // ⭐ 從 HttpContext.RequestServices 獲取 Scoped 服務
-    // 因為 IExceptionHandler 是 Singleton，不能直接依賴 Scoped 服務
-    // ⚠️ 注意：IExceptionHandler 直接寫入 Response，不會經過 Result Filter
-    // 所以需要自己解析 WorkflowCode
-    var workflowCodeResolver =
-      httpContext.RequestServices.GetRequiredService<WorkflowCodeResolver>();
-    var baseErrorCode = "99999";
-    var workflowCode = workflowCodeResolver.Resolve(baseErrorCode);
-    //// ===============================
-    //// Guard / Business Exception
-    //// ===============================
-    //if (exception is DomainException dex)
-    //{
-    //  var fileName = Path.GetFileName(dex.Context.File);
-
-    //  var location = dex.Context.ArgumentExpression is null
-    //    ? $"{dex.Context.Member} ({fileName} at Line:{dex.Context.Line})"
-    //    : $"{dex.Context.Member} ({fileName} at Line:{dex.Context.Line}) [{dex.Context.ArgumentExpression}]";
-
-    //  _logger.LogWarning(
-    //    exception,
-    //    """
-    //    Guard failure
-    //    Code: {Code}
-    //    Location: {Location}
-    //    Request: {RequestSource}
-    //    """,
-    //    dex.ErrorCode.Code,
-    //    $"{fileName}:{dex.Context.Member}:{dex.Context.Line}",
-    //    requestSource
-    //  );
-
-    //  httpContext.Response.StatusCode = StatusCodes.Status200OK;
-
-    //  // 使用 APIResponse 包裝業務錯誤回應（商業邏輯錯誤，不需要 ExceptionDetails）
-    //  var apiResponse = new APIResponse<object>(
-    //    Code: "9999",
-    //    Message: dex.Message
-    //  );
-
-    //  await httpContext.Response.WriteAsJsonAsync(apiResponse, cancellationToken);
-
-    //  return true;
-    //}
-
-    // ===============================
-    // Unexpected / System Error
-    // ===============================
     _logger.LogError(
-      exception,
-      """
-      Unhandled exception
-      Request: {RequestSource}
-      """,
-      requestSource
-    );
+        exception,
+        """
+            Unhandled exception
+            Request: {RequestSource}
+            """,
+        requestSource);
 
-    httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
+    httpContext.Response.StatusCode =
+        StatusCodes.Status500InternalServerError;
 
-    // 使用 APIResponse 包裝系統錯誤回應（必須包含 ExceptionDetails）
-    var exceptionDetails = new ExceptionDetails(
-      Type: "internal-server-error",
-      Title: "Internal Server Error",
-      Detail: exception.Message
-    );
+    // 1️ 取得 Workflow
+    var workflow = Workflow.Current;
 
-    var systemApiResponse = new APIResponse<object>(
-      Code: workflowCode,
-      Message: "程式內部錯誤",
-      ExceptionDetails: exceptionDetails
-    );
+    // 2️ 使用 SystemCode.InternalError
+    var finalCode = workflow.Code.Build(SystemCode.InternalError);
 
-    await httpContext.Response.WriteAsJsonAsync(systemApiResponse, cancellationToken);
+    // 3️ 建立 APIResponse（純 DTO）
+    var response = new APIResponse(
+        code: finalCode,
+        message: SystemCode.InternalError.Message);
+
+    await httpContext.Response
+        .WriteAsJsonAsync(response, cancellationToken);
 
     return true;
   }

@@ -1,4 +1,5 @@
-using DMIS_Backend.Api.Common;
+﻿using DMIS_Backend.Api.Common.Responses;
+using DMIS_Backend.Domain.Kernel.Primitives;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -28,8 +29,15 @@ public class AuthenticationFilter : IAsyncAuthorizationFilter
     // 檢查是否已驗證（技術層）
     if (context.HttpContext.User.Identity?.IsAuthenticated != true)
     {
-      // 建立驗證失敗的 APIResponse（使用基礎錯誤碼，讓 Stage 2 Filter 來解析完整的 WorkflowCode）
-      var apiResponse = new APIResponse<object>(Code: "AUTH001", Message: "需要身份驗證");
+
+      //// 1️ 取得 Workflow
+      //var workflow = Workflow.Current;
+
+      //// 2️ 使用 SystemCode.Authentication
+      //var finalCode = workflow.Code.Build(SystemCode.Authentication);
+
+      // 3️ 建立 APIResponse（純 DTO）
+      var apiResponse = ApiResponseHelper.Failure<object>(SystemCode.Authentication);
 
       context.Result = new ObjectResult(apiResponse)
       {

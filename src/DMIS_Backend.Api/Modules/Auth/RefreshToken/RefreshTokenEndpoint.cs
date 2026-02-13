@@ -1,8 +1,7 @@
-﻿using DMIS_Backend.Api.Common;
-using DMIS_Backend.Application.Kernel.Abstractions;
-using DMIS_Backend.Application.Kernel.Workflows.IdentifierCodes;
+﻿using DMIS_Backend.Api.Common.Responses;
+using DMIS_Backend.Application.Core.Abstractions.Commands;
+using DMIS_Backend.Application.Core.Workflows;
 using DMIS_Backend.Application.Modules.Auth.Commands.RefreshToken;
-using DMIS_Backend.Domain.Kernel.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,7 +14,6 @@ namespace DMIS_Backend.Api.Modules.Auth.RefreshToken;
 [ApiController]
 [Tags("Auth")]
 [Route("api/auth")]
-[ModuleCode(nameof(ModuleCode.Auth))]
 public class RefreshTokenEndpoint : ControllerBase
 {
   /// <summary>
@@ -27,8 +25,6 @@ public class RefreshTokenEndpoint : ControllerBase
   /// <returns>新的 JWT Token</returns>
   [HttpPost("refresh")]
   [AllowAnonymous]
-  [OperationType(nameof(OperationType.Command))]
-  [ScopeFunction(nameof(ScopeFunction.UNKNOW))]
   [ProducesResponseType(typeof(APIResponse<RefreshTokenResponse>), StatusCodes.Status200OK)]
   [ProducesResponseType(typeof(APIResponse<object>), StatusCodes.Status401Unauthorized)]
   public async Task<IActionResult> Handle(
@@ -36,6 +32,7 @@ public class RefreshTokenEndpoint : ControllerBase
     [FromServices] IUseCaseCommandHandler<RefreshTokenCommand, RefreshTokenResult> handler,
     CancellationToken cancellationToken)
   {
+    Workflow.Set(WorkflowCode.Auth);
     // 將 API Request 轉換為 Application Command
     var command = request.ToCommand();
 
@@ -43,6 +40,6 @@ public class RefreshTokenEndpoint : ControllerBase
     var result = await handler.HandleAsync(command, cancellationToken);
 
     // 將 Application Result 轉換為 API Response
-    return Ok(result.Map(data => data.ToRefreshTokenResponse()));
+    return Ok(result.Map(data => data.ToRefreshTokenResponse()).ToApiResponse());
   }
 }
